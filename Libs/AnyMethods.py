@@ -6,7 +6,7 @@ import json,time
 
 def write_json(new_dict,path):
     '''
-    写如json文件
+    写json文件
 
     :param new_dict: 写入的字典
     :param path: 文件的位置及文件名
