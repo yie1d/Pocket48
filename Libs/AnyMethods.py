@@ -4,7 +4,7 @@
 
 import json,time
 
-def write_json(new_dict,path):
+def WriteJson(new_dict,path):
     '''
     写json文件
 
@@ -15,7 +15,7 @@ def write_json(new_dict,path):
         json.dump(new_dict, f)
     f.close()
 
-def read_json(path):
+def ReadJson(path):
     '''
     读json文件
 
@@ -27,7 +27,7 @@ def read_json(path):
     load_f.close()
     return load_dict
 
-def convert_to_timestamp(date):
+def Convert_to_Timestamp(date):
     '''
     日期转时间戳
 
@@ -42,7 +42,7 @@ def convert_to_timestamp(date):
 
     return end_timeStamp
 
-def convert_to_date(timestamp):
+def Convert_to_Date(timestamp):
     '''
     时间戳转日期
 
