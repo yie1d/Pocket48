@@ -4,7 +4,8 @@
 
 from Libs.GetPA import get_Pa
 from Libs.AnyMethods import ReadJson
-import requests,time
+import requests, time
+
 
 class NetworkRequest():
     def __init__(self):
@@ -62,7 +63,7 @@ class NetworkRequest():
             "token": self.__token
         })
 
-    def __Post(self, url:str, data=None):
+    def __Post(self, url: str, data=None):
         """
         post方法
 
@@ -75,7 +76,7 @@ class NetworkRequest():
         while retryCount < 5:
             try:
                 # 发起请求
-                res = requests.post(url=url,json=data,headers=self.__session.headers,timeout=10)
+                res = requests.post(url=url, json=data, headers=self.__session.headers, timeout=10)
                 # PA 过期
                 if res.json()['message'] == '请升级到最新版本':
                     self.__SetHeaders()
@@ -93,21 +94,20 @@ class NetworkRequest():
 
         return None
 
-
     def GetMemberBasicInfo(self, **kwargs):
         """
         通过成员名(模糊搜索)/id(精确搜索)获取成员基本信息
 
-        :param kwargs: name 成员名  member_id 成员id
+        :param kwargs: name 成员名  userId 成员id
         :return: post响应
         """
         # 传参name则模糊搜索
-        if kwargs.get("name",False):
+        if kwargs.get("name", False):
             data = {"content": kwargs.get("name"), "limit": 30}
             url = 'https://pocketapi.48.cn/search/api/search/v1/query'
-        # 传参member_id则精确搜索
-        elif kwargs.get("member_id",False):
-            data = {"lastTime": 0, "memberId": kwargs.get("member_id"), "limit": 20}
+        # 传参userId则精确搜索
+        elif kwargs.get("userId", False):
+            data = {"lastTime": 0, "memberId": kwargs.get("userId"), "limit": 20}
             url = 'https://pocketapi.48.cn/user/api/v1/user/star/archives'
         # 错误传参
         else:
@@ -115,73 +115,73 @@ class NetworkRequest():
 
         return self.__Post(url, data)
 
-    def GetGiftInfo(self,member_id,businessCode=2):
+    def GetGiftInfo(self, userId, businessCode=2):
         """
-        businessCode
+        获取礼物信息
 
-        :param member_id: 成员id
+        :param userId: 成员id
         :param businessCode: 可以在0-3设置
         :return: post响应
         """
-        data = {"businessCode": businessCode,"memberId": member_id}
+        data = {"businessCode": businessCode, "memberId": userId}
         url = 'https://pocketapi.48.cn/gift/api/v1/gift/list'
 
         return self.__Post(url, data)
 
-    def GetRoomBasicInfo(self, member_id,type = 0):
+    def GetRoomBasicInfo(self, userId, type=0):
         """
         获取口袋房间基本信息
 
-        :param member_id: 成员id
+        :param userId: 成员id
         :param type: 好像只能设置0，设置其它的都是房间不存在
         :return: post响应
         """
-        data = {"sourceId": member_id, "type": type}
+        data = {"sourceId": userId, "type": type}
         url = 'https://pocketapi.48.cn/im/api/v1/im/room/info/type/source'
 
         return self.__Post(url, data)
 
-    def GetRoomMemberChat(self,member_id, room_id,  nextTime=0,needTop1Msg=True):
+    def GetRoomMemberChat(self, userId, roomId, nextTime=0, needTop1Msg=True):
         """
         获取成员房间聊天信息(进入房间能看到的信息)
 
-        :param member_id: 成员id
-        :param room_id: 房间id
+        :param userId: 成员id
+        :param roomId: 房间id
         :param nextTime: 0为当前，其余的可以根据每次调用后返回的nextTime设置
         :param needTop1Msg: True和False测试的时候没发现区别
         :return: post响应
         """
-        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": member_id, "roomId": room_id}
+        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": userId, "roomId": roomId}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner'
 
         return self.__Post(url, data)
 
-    def GetRoomFansChat(self, member_id,room_id,  nextTime=0,needTop1Msg=True):
+    def GetRoomFansChat(self, userId, roomId, nextTime=0, needTop1Msg=True):
         """
         获取聚聚房间聊天信息(进入房间后左滑看到的信息)
 
-        :param member_id: 成员id
-        :param room_id: 房间id
+        :param userId: 成员id
+        :param roomId: 房间id
         :param nextTime: 0为当前，其余的可以根据每次调用后返回的nextTime设置
         :param needTop1Msg: True和False测试的时候没发现区别
         :return: post响应
         """
-        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": member_id, "roomId": room_id}
+        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": userId, "roomId": roomId}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/all'
 
         return self.__Post(url, data)
 
-    def GetRoomOtherInfo(self,member_id, room_id,  type:str, nextTime=0):
+    def GetRoomOtherInfo(self, userId, roomId, type: str, nextTime=0):
         """
         其它信息(口袋房间上面的可选项)
 
-        :param member_id: 成员id
-        :param room_id: 房间id
+        :param userId: 成员id
+        :param roomId: 房间id
         :param type: "USER_LIVE"直播、"OPEN_LIVE"公演、"WEI_BO"微博、"DOU_YIN"抖音等
         :param nextTime: 0为当前，其余的可以根据每次调用后返回的nextTime设置
         :return: post响应
         """
-        data = {"nextTime": nextTime, "ownerId": member_id, "extMsgType": type, "roomId": room_id}
+        data = {"nextTime": nextTime, "ownerId": userId, "extMsgType": type, "roomId": roomId}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/aim/type'
 
         return self.__Post(url, data)
@@ -209,12 +209,12 @@ class NetworkRequest():
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
-        res = requests.get(url,headers=headers)
+        res = requests.get(url, headers=headers)
 
         return res.content.decode()
 
     @staticmethod
-    def GetJzbRank(name:str):
+    def GetJzbRank(name: str):
         '''
         获取饺子榜数据
 
@@ -258,16 +258,17 @@ class NetworkRequest():
 
         return self.__Post(url)
 
+
 if __name__ == '__main__':
     m = NetworkRequest()
     # 农燕萍为例   memberid:417321  roomid:67313737
     # print(m.GetMemberBasicInfo(name = "农燕萍")['content']['memberIndexTemplates'])
-    # print(m.GetMemberBasicInfo(member_id = 417321)['content'])
+    # print(m.GetMemberBasicInfo(userId = 417321)['content'])
     # print(m.GetRoomBasicInfo(417321))
     # print(m.GetGiftInfo(417321))
     # print(m.GetRoomMemberChat(417321,67313737,0,False)['content'])
     # print(m.GetRoomFansChat(417321,67313737,0,False)['content'])
-    # print(m.GetRoomOtherInfo(417321,67313737,"USER_LIVE",0)['content'])
+    # print(m.GetRoomOtherInfo(417321, 67313737, "WEI_BO", 1627534899000)['content'])
     # print(m.GetRoomLive(627290345307967488)['content'])
 
     # '''直播时间计算'''
@@ -285,7 +286,3 @@ if __name__ == '__main__':
     # WriteJson(m.GetSnhMemberId(),'../Config/allmembers_snh.json')
 
     # print(m.GetImInfo())
-
-
-
-
