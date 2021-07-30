@@ -3,7 +3,7 @@
 # @Author : XyD3°
 
 from Libs.GetPA import get_Pa
-from Libs.AnyMethods import read_json
+from Libs.AnyMethods import ReadJson
 import requests,time
 
 class NetworkRequest():
@@ -13,14 +13,14 @@ class NetworkRequest():
 
         """
         # 获取配置信息
-        self.__config = read_json("../Config/Config.json")
+        self.__config = ReadJson("../Config/Config.json")
         # 获取token
-        self.__get_token()
+        self.__GetToken()
         # 创建会话
         self.__session = requests.Session()
-        self.__set_headers()
+        self.__SetHeaders()
 
-    def __get_token(self):
+    def __GetToken(self):
         """
         登录获取TOKEN值
 
@@ -45,7 +45,7 @@ class NetworkRequest():
         # 解析返回数据
         self.__token = res.json()['content']['token']
 
-    def __set_headers(self):
+    def __SetHeaders(self):
         """
         设置请求头
 
@@ -62,7 +62,7 @@ class NetworkRequest():
             "token": self.__token
         })
 
-    def __requests_post(self, url:str, data=None):
+    def __Post(self, url:str, data=None):
         """
         post方法
 
@@ -78,11 +78,11 @@ class NetworkRequest():
                 res = requests.post(url=url,json=data,headers=self.__session.headers,timeout=10)
                 # PA 过期
                 if res.json()['message'] == '请升级到最新版本':
-                    self.__set_headers()
+                    self.__SetHeaders()
                 # TOKEN过期
                 elif res.json()['message'] in ['token解密失败', '非法授权']:
-                    self.__get_token()
-                    self.__set_headers()
+                    self.__GetToken()
+                    self.__SetHeaders()
                 else:
                     return res.json()
             # 请求错误
@@ -94,7 +94,7 @@ class NetworkRequest():
         return None
 
 
-    def get_member_BasicInfor(self, **kwargs):
+    def GetMemberBasicInfo(self, **kwargs):
         """
         通过成员名(模糊搜索)/id(精确搜索)获取成员基本信息
 
@@ -113,9 +113,9 @@ class NetworkRequest():
         else:
             return None
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_gift_Infor(self,member_id,businessCode=2):
+    def GetGiftInfo(self,member_id,businessCode=2):
         """
         businessCode
 
@@ -126,9 +126,9 @@ class NetworkRequest():
         data = {"businessCode": businessCode,"memberId": member_id}
         url = 'https://pocketapi.48.cn/gift/api/v1/gift/list'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_room_BasicInfor(self, member_id,type = 0):
+    def GetRoomBasicInfo(self, member_id,type = 0):
         """
         获取口袋房间基本信息
 
@@ -139,9 +139,9 @@ class NetworkRequest():
         data = {"sourceId": member_id, "type": type}
         url = 'https://pocketapi.48.cn/im/api/v1/im/room/info/type/source'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_room_MemberChat(self,member_id, room_id,  nextTime=0,needTop1Msg=True):
+    def GetRoomMemberChat(self,member_id, room_id,  nextTime=0,needTop1Msg=True):
         """
         获取成员房间聊天信息(进入房间能看到的信息)
 
@@ -154,9 +154,9 @@ class NetworkRequest():
         data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": member_id, "roomId": room_id}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_room_FansChat(self, member_id,room_id,  nextTime=0,needTop1Msg=True):
+    def GetRoomFansChat(self, member_id,room_id,  nextTime=0,needTop1Msg=True):
         """
         获取聚聚房间聊天信息(进入房间后左滑看到的信息)
 
@@ -169,9 +169,9 @@ class NetworkRequest():
         data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": member_id, "roomId": room_id}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/all'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_room_OtherInfor(self,member_id, room_id,  type:str, nextTime=0):
+    def GetRoomOtherInfo(self,member_id, room_id,  type:str, nextTime=0):
         """
         其它信息(口袋房间上面的可选项)
 
@@ -184,9 +184,9 @@ class NetworkRequest():
         data = {"nextTime": nextTime, "ownerId": member_id, "extMsgType": type, "roomId": room_id}
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/aim/type'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
-    def get_room_Live(self, liveid):
+    def GetRoomLive(self, liveid):
         '''
         获取直播信息
 
@@ -196,10 +196,10 @@ class NetworkRequest():
         data = {"liveId": liveid}
         url = 'https://pocketapi.48.cn/live/api/v1/live/getLiveOne'
 
-        return self.__requests_post(url, data)
+        return self.__Post(url, data)
 
     @staticmethod
-    def get_live_Barrage(url):
+    def GetLiveBarrage(url):
         """
         获取直播的弹幕
 
@@ -214,7 +214,7 @@ class NetworkRequest():
         return res.content.decode()
 
     @staticmethod
-    def get_jzb_Rank(name:str):
+    def GetJzbRank(name:str):
         '''
         获取饺子榜数据
 
@@ -232,7 +232,7 @@ class NetworkRequest():
         return res.content.decode('unicode_escape')
 
     @staticmethod
-    def get_snh_memberid():
+    def GetSnhMemberId():
         '''
         官网名单
 
@@ -248,7 +248,7 @@ class NetworkRequest():
         )
         return res.json()
 
-    def get_im_infor(self):
+    def GetImInfo(self):
         '''
 
 
@@ -256,27 +256,35 @@ class NetworkRequest():
         '''
         url = 'https://pocketapi.48.cn/im/api/v1/im/userinfo'
 
-        return self.__requests_post(url)
+        return self.__Post(url)
 
 if __name__ == '__main__':
     m = NetworkRequest()
     # 农燕萍为例   memberid:417321  roomid:67313737
-    # print(m.get_member_BasicInfor(name = "农燕萍")['content']['memberIndexTemplates'])
-    # print(m.get_member_BasicInfor(member_id = 417321)['content'])
-    # print(m.get_room_BasicInfor(417321))
-    # print(m.get_gift_Infor(417321))
-    # print(m.get_room_MemberChat(417321,67313737,0,False)['content'])
-    # print(m.get_room_FansChat(417321,67313737,0,False)['content'])
-    # print(m.get_room_OtherInfor(417321,67313737,"USER_LIVE",0)['content'])
-    # print(m.get_room_Live(627290345307967488)['content'])
+    # print(m.GetMemberBasicInfo(name = "农燕萍")['content']['memberIndexTemplates'])
+    # print(m.GetMemberBasicInfo(member_id = 417321)['content'])
+    # print(m.GetRoomBasicInfo(417321))
+    # print(m.GetGiftInfo(417321))
+    # print(m.GetRoomMemberChat(417321,67313737,0,False)['content'])
+    # print(m.GetRoomFansChat(417321,67313737,0,False)['content'])
+    # print(m.GetRoomOtherInfo(417321,67313737,"USER_LIVE",0)['content'])
+    # print(m.GetRoomLive(627290345307967488)['content'])
 
+    # '''直播时间计算'''
+    # res = m.GetLiveBarrage('https://source.48.cn/live/lrc/20210729/c1fd811b-7521-4c6d-9832-68d5d5ef46c6.lrc')
+    # print(res)
+    # LastTime_list = res.split('[')[-1].split(']')[0].split('.')[0].split(':')
+    # last_time = int(LastTime_list[0]) * 3600 + int(LastTime_list[1]) * 60 + int(LastTime_list[2])
+    # print(last_time)
+    # '''发言数'''
+    # danmu_num = res.split('\n')[:-1]
+    # print(len(danmu_num))
 
+    # print(m.GetJzbRank('农燕萍'))
+    # print(m.GetSnhMemberId())
+    # WriteJson(m.GetSnhMemberId(),'../Config/allmembers_snh.json')
 
-    # print(m.get_jzb_Rank('农燕萍'))
-    # print(m.get_snh_memberid())
-    # write_json(m.get_snh_memberid(),'../Config/allmembers_snh.json')
-
-    # print(m.get_im_infor())
+    # print(m.GetImInfo())
 
 
 
