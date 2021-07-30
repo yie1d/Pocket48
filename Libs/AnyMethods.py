@@ -2,18 +2,20 @@
 # @Time : 2021/7/14 ‏‎20:18
 # @Author : XyD3°
 
-import json,time
+import json, time
 
-def WriteJson(new_dict,path):
+
+def WriteJson(new_dict, path):
     '''
     写json文件
 
     :param new_dict: 写入的字典
     :param path: 文件的位置及文件名
     '''
-    with open(path,"w") as f:
+    with open(path, "w") as f:
         json.dump(new_dict, f)
     f.close()
+
 
 def ReadJson(path):
     '''
@@ -22,10 +24,11 @@ def ReadJson(path):
     :param path: 读取的文件位置
     :return: 字典
     '''
-    with open(path, 'r',encoding='utf-8') as load_f:
+    with open(path, 'r', encoding='utf-8') as load_f:
         load_dict = json.load(load_f)
     load_f.close()
     return load_dict
+
 
 def Convert_to_Timestamp(date):
     '''
@@ -42,6 +45,7 @@ def Convert_to_Timestamp(date):
 
     return end_timeStamp
 
+
 def Convert_to_Date(timestamp):
     '''
     时间戳转日期
@@ -49,8 +53,7 @@ def Convert_to_Date(timestamp):
     :param timestamp: 时间戳
     :return: 日期
     '''
-    timeArray = time.localtime(timestamp / 1000)
-    otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray).split(' ')
+    timeArray = time.localtime(timestamp / 1000 + 1)
+    otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
 
     return otherStyleTime
-
