@@ -6,6 +6,7 @@ class RoomNotFound(Exception):
     '''
     房间不存在
     '''
+
     def __str__(self):
         '''
         错误信息
@@ -14,10 +15,12 @@ class RoomNotFound(Exception):
         '''
         return '房间不存在'
 
+
 class UnknownError(Exception):
     '''
     未知错误类型
     '''
+
     def __str__(self):
         '''
 
