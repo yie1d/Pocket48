@@ -115,17 +115,17 @@ class NetworkRequest():
 
         return self.__Post(url, data)
 
-    def GetUserInfo(self,userId):
+    def GetUserInfo(self, userId):
         '''
         获取用户基本信息
 
         :param userId: 用户ID
         :return: post响应
         '''
-        data = {"userId":userId}
+        data = {"userId": userId}
         url = "https://pocketapi.48.cn/user/api/v1/user/info/home"
 
-        return self.__Post(url,data)
+        return self.__Post(url, data)
 
     def GetGiftInfo(self, userId, businessCode=2):
         """
