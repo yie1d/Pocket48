@@ -115,6 +115,18 @@ class NetworkRequest():
 
         return self.__Post(url, data)
 
+    def GetUserInfo(self,userId):
+        '''
+        获取用户基本信息
+
+        :param userId: 用户ID
+        :return: post响应
+        '''
+        data = {"userId":userId}
+        url = "https://pocketapi.48.cn/user/api/v1/user/info/home"
+
+        return self.__Post(url,data)
+
     def GetGiftInfo(self, userId, businessCode=2):
         """
         获取礼物信息
@@ -210,7 +222,7 @@ class NetworkRequest():
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
         res = requests.get(url, headers=headers)
-
+        # print(res.content)
         return res.content.decode()
 
     @staticmethod
@@ -269,7 +281,7 @@ if __name__ == '__main__':
     # print(m.GetRoomMemberChat(417321,67313737,0,False)['content'])
     # print(m.GetRoomFansChat(417321,67313737,0,False)['content'])
     # print(m.GetRoomOtherInfo(417321, 67313737, "WEI_BO", 1627534899000)['content'])
-    # print(m.GetRoomLive(627290345307967488)['content'])
+    print(m.GetRoomLive(627290345307967488)['content'])
 
     # '''直播时间计算'''
     # res = m.GetLiveBarrage('https://source.48.cn/live/lrc/20210729/c1fd811b-7521-4c6d-9832-68d5d5ef46c6.lrc')
