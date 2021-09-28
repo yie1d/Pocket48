@@ -1,0 +1,23 @@
+{
+  "PA_Config": {
+  },
+  "TOKEN_Config": {
+    "mobile": "手机号",
+    "pwd": "密码"
+  },
+  "HEADERS_Config": {
+    "appInfo": {
+      "IMEI": "fcc6a3c32b4dd4ce",
+      "appBuild": "21061102",
+      "appVersion": "6.2.0",
+      "deviceId": "fcc6a3c32b4dd4ce",
+      "deviceName": "vmos",
+      "osType": "android",
+      "osVersion": "7.1.2",
+      "phoneName": "vmos",
+      "phoneSystemVersion": "7.1.2",
+      "vendor": "vmos"
+    },
+    "User-Agent": "PocketFans201807/6.2.0_21061102 (MI 9:Android 7.1.2;Xiaomi Xiaomi-user 7.1.2 20171130.276299 release-keys)"
+  }
+}
