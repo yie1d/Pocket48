@@ -1,20 +1,21 @@
-# -*- codeing = utf-8 -*-
-# @Time : 2021/7/14 ‏‎19:17
-# @Author : XyD3°
-
 from Libs.GetPA import get_Pa
 from Libs.AnyMethods import ReadJson
-import requests, time
+from Libs.CustomError import NetError
+import requests
+import time
 
 
 class NetworkRequest():
-    def __init__(self):
+    def __init__(self, ConfigPath):
         """
         初始化
 
         """
         # 获取配置信息
-        self.__config = ReadJson("../Config/Config.json")
+        self.__config = ReadJson(ConfigPath)
+
+        # 设置代理池
+        self.proxy = [None]
         # 获取token
         self.__GetToken()
         # 创建会话
@@ -42,7 +43,8 @@ class NetworkRequest():
         res = requests.post(
             'https://pocketapi.48.cn/user/api/v1/login/app/mobile',
             headers=token_headers,
-            json=data, timeout=10)
+            json=data,
+            timeout=10)
         # 解析返回数据
         self.__token = res.json()['content']['token']
 
@@ -53,14 +55,22 @@ class NetworkRequest():
         """
         self.__session.headers.update({
             # 每次更新headers重新获取PA值
-            "pa": get_Pa(self.__config.get("PA_Config")),
-            "appInfo": str(self.__config.get("HEADERS_Config").get("appInfo")),
-            "User-Agent": self.__config.get("HEADERS_Config").get("User-Agent"),
-            "Content-Type": "application/json; charset=UTF-8",
-            "Host": "pocketapi.48.cn",
-            "Connection": "close",
-            "Accept-Encoding": "gzip",
-            "token": self.__token
+            "pa":
+            get_Pa(self.__config.get("PA_Config")),
+            "appInfo":
+            str(self.__config.get("HEADERS_Config").get("appInfo")),
+            "User-Agent":
+            self.__config.get("HEADERS_Config").get("User-Agent"),
+            "Content-Type":
+            "application/json; charset=UTF-8",
+            "Host":
+            "pocketapi.48.cn",
+            "Connection":
+            "close",
+            "Accept-Encoding":
+            "gzip",
+            "token":
+            self.__token
         })
 
     def __Post(self, url: str, data=None):
@@ -76,7 +86,11 @@ class NetworkRequest():
         while retryCount < 5:
             try:
                 # 发起请求
-                res = requests.post(url=url, json=data, headers=self.__session.headers, timeout=10)
+                res = self.__session.post(url=url,
+                                          json=data,
+                                          headers=self.__session.headers,
+                                          proxies=self.proxy[0],
+                                          timeout=10)
                 # PA 过期
                 if res.json()['message'] == '请升级到最新版本':
                     self.__SetHeaders()
@@ -92,7 +106,7 @@ class NetworkRequest():
                 # 等待3s
                 time.sleep(3)
 
-        return None
+        raise NetError
 
     def GetMemberBasicInfo(self, **kwargs):
         """
@@ -107,7 +121,11 @@ class NetworkRequest():
             url = 'https://pocketapi.48.cn/search/api/search/v1/query'
         # 传参userId则精确搜索
         elif kwargs.get("userId", False):
-            data = {"lastTime": 0, "memberId": kwargs.get("userId"), "limit": 20}
+            data = {
+                "lastTime": 0,
+                "memberId": kwargs.get("userId"),
+                "limit": 20
+            }
             url = 'https://pocketapi.48.cn/user/api/v1/user/star/archives'
         # 错误传参
         else:
@@ -163,7 +181,12 @@ class NetworkRequest():
         :param needTop1Msg: True和False测试的时候没发现区别
         :return: post响应
         """
-        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": userId, "roomId": roomId}
+        data = {
+            "needTop1Msg": needTop1Msg,
+            "nextTime": nextTime,
+            "ownerId": userId,
+            "roomId": roomId
+        }
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/homeowner'
 
         return self.__Post(url, data)
@@ -178,7 +201,12 @@ class NetworkRequest():
         :param needTop1Msg: True和False测试的时候没发现区别
         :return: post响应
         """
-        data = {"needTop1Msg": needTop1Msg, "nextTime": nextTime, "ownerId": userId, "roomId": roomId}
+        data = {
+            "needTop1Msg": needTop1Msg,
+            "nextTime": nextTime,
+            "ownerId": userId,
+            "roomId": roomId
+        }
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/all'
 
         return self.__Post(url, data)
@@ -193,7 +221,12 @@ class NetworkRequest():
         :param nextTime: 0为当前，其余的可以根据每次调用后返回的nextTime设置
         :return: post响应
         """
-        data = {"nextTime": nextTime, "ownerId": userId, "extMsgType": type, "roomId": roomId}
+        data = {
+            "nextTime": nextTime,
+            "ownerId": userId,
+            "extMsgType": type,
+            "roomId": roomId
+        }
         url = 'https://pocketapi.48.cn/im/api/v1/chatroom/msg/list/aim/type'
 
         return self.__Post(url, data)
@@ -210,6 +243,41 @@ class NetworkRequest():
 
         return self.__Post(url, data)
 
+    # 获取周榜id
+    def get_MeleeWeekId(self):
+        '''
+        鸡腿榜周对应的id
+
+        :return:
+        '''
+        url = 'https://pocketapi.48.cn/gift/api/v1/melee/rank/getMeleeRankPage'
+
+        return self.__Post(url)
+
+    # 获取鸡腿榜单
+    def get_MeleeRank(self, rankId, nextId):
+        '''鸡腿榜详细数据
+
+        :param rankId: 周对应的id
+        :param nextId: 0为最开始，下一次的根据返回的参数设置
+        :return:
+        '''
+        data = {"nextId": nextId, "rankId": rankId}
+        url = 'https://pocketapi.48.cn/gift/api/v1/melee/rank/getMeleeWeekRank'
+
+        return self.__Post(url, data)
+
+    def GetIdolAnswer(self, memberId):
+        '''
+        获取翻牌价格
+
+        :return:
+        '''
+        data = {"memberId": memberId}
+        url = "https://pocketapi.48.cn/idolanswer/api/idolanswer/v2/custom/index"
+
+        return self.__Post(url, data)
+
     @staticmethod
     def GetLiveBarrage(url):
         """
@@ -219,29 +287,14 @@ class NetworkRequest():
         :return: 解析后的数据
         """
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.62",
+            "Connection": "close"
         }
+        requests.keep_alive = False
         res = requests.get(url, headers=headers)
         # print(res.content)
-        return res.content.decode()
-
-    @staticmethod
-    def GetJzbRank(name: str):
-        '''
-        获取饺子榜数据
-
-        :param name: 成员姓名
-        :return: 获取到的数据
-        '''
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        }
-        url = 'https://www.jzb48.com/zx/api/get.php?type=detail&name=' + name
-        res = requests.get(
-            url=url,
-            headers=headers
-        )
-        return res.content.decode('unicode_escape')
+        return res.content.decode("utf-8", 'ignore')
 
     @staticmethod
     def GetSnhMemberId():
@@ -250,14 +303,9 @@ class NetworkRequest():
 
         :return: 获取到的数据
         '''
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        }
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
         url = 'https://h5.48.cn/resource/jsonp/allmembers.php?gid'
-        res = requests.get(
-            url=url,
-            headers=headers
-        )
+        res = requests.get(url=url, headers=headers)
         return res.json()
 
     def GetImInfo(self):
@@ -280,8 +328,8 @@ if __name__ == '__main__':
     # print(m.GetGiftInfo(417321))
     # print(m.GetRoomMemberChat(417321,67313737,0,False)['content'])
     # print(m.GetRoomFansChat(417321,67313737,0,False)['content'])
-    # print(m.GetRoomOtherInfo(417321, 67313737, "WEI_BO", 1627534899000)['content'])
-    print(m.GetRoomLive(627290345307967488)['content'])
+    # print(m.GetRoomOtherInfo(417321, 67313737, "USER_LIVE", 0)['content']['message'][0])
+    # print(m.GetRoomLive(627290345307967488)['content'])
 
     # '''直播时间计算'''
     # res = m.GetLiveBarrage('https://source.48.cn/live/lrc/20210729/c1fd811b-7521-4c6d-9832-68d5d5ef46c6.lrc')
@@ -298,3 +346,7 @@ if __name__ == '__main__':
     # WriteJson(m.GetSnhMemberId(),'../Config/allmembers_snh.json')
 
     # print(m.GetImInfo())
+    print(m.GetUserInfo("39519185"))
+
+    # print(m.get_MeleeWeekId())
+    # print(m.get_MeleeRank(157, 0))
