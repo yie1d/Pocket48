@@ -1,7 +1,3 @@
-# -*- codeing = utf-8 -*-
-# @Time : 2021/7/29 12:57
-# @Author : XyD3°
-
 from Libs.CustomError import RoomNotFound, UnknownError
 
 
