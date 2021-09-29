@@ -1,8 +1,5 @@
-# -*- codeing = utf-8 -*-
-# @Time : 2021/7/14 ‏‎20:18
-# @Author : XyD3°
-
-import json, time
+import json
+import time
 
 
 def WriteJson(new_dict, path):
