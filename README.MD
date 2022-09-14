@@ -3,7 +3,7 @@
   QQ：2608019886  
 
   <details open>
-  <summary>更新</summary>
+  <summary>更新记录</summary>
   
   - 2021/7/14  
     - 整理了一下各个类，让结构看起来清晰点。
