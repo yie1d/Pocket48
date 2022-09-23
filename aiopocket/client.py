@@ -1,9 +1,17 @@
 import asyncio
+import os
+import json
 from typing import List, Dict, Tuple, Optional, Union
+from pprint import pprint
 
 import aiohttp
 import toml
+import yarl
+import requests
 from tenacity import retry, stop_after_attempt
+from retrying import retry
+
+from .typedefs import UserInfo
 
 
 class Client:
@@ -11,6 +19,7 @@ class Client:
         """
         pocket48客户端
         """
+        self.__config: Optional[dict] = None
 
         self.__token: Optional[str] = None
         self.__connector: Optional[aiohttp.TCPConnector] = None
@@ -66,28 +75,28 @@ class Client:
         return self.__session
 
     @property
+    def config(self):
+        """
+        配置项
+        """
+        if self.__config is None:
+            with open('config/config.toml', 'r') as f:
+                self.__config = toml.load(f)
+
+        return self.__config
+
+    @property
     def get_headers(self):
         """
         基本headers
         """
         base_headers = {
-            aiohttp.hdrs.USER_AGENT: 'PocketFans201807/6.2.0_21061102 (MI 9:Android 7.1.2;Xiaomi Xiaomi-user 7.1.2 20171130.276299 release-keys)',
-            aiohttp.hdrs.CONTENT_TYPE: 'application/json; charset=UTF-8',
-            aiohttp.hdrs.HOST: 'pocketapi.48.cn',
-            aiohttp.hdrs.CONNECTION: 'Connection',
-            aiohttp.hdrs.ACCEPT_ENCODING: 'gzip',
-            'appInfo': {
-                'IMEI': 'fcc6a3c32b4dd4ce',
-                'appBuild': '21061102',
-                'appVersion': '6.2.0',
-                'deviceId': 'fcc6a3c32b4dd4ce',
-                'deviceName': 'vmos',
-                'osType': 'android',
-                'osVersion': '7.1.2',
-                'phoneName': 'vmos',
-                'phoneSystemVersion': '7.1.2',
-                'vendor': 'vmos'
-            }
+            aiohttp.hdrs.USER_AGENT: self.config['Headers']['user_agent'],
+            aiohttp.hdrs.CONTENT_TYPE: self.config['Headers']['content_type'],
+            aiohttp.hdrs.HOST: self.config['Headers']['host'],
+            aiohttp.hdrs.CONNECTION: 'close',
+            aiohttp.hdrs.ACCEPT_ENCODING: self.config['Headers']['content_type'],
+            'appInfo': self.config['Headers']['appInfo']
         }
 
         if self.__token:
@@ -98,18 +107,55 @@ class Client:
             'token': self.__token
         })
 
-    async def post(self, url, params):
+    async def apost(self, _url, _params, _headers=None):
         async with self.__sem:
             async with self.session.post() as resp:
                 # todo 发起请求
                 pass
 
     @staticmethod
+    @retry(stop_max_attempt_number=3, wait_fixed=3)
+    def rpost(_url: yarl.URL, _params: Dict[str, str], _headers: Optional[Dict[str, str]] = None, _timeout: int = 3):
+        """
+        发起普通post请求
+        """
+        res = requests.post(
+            url=str(_url),
+            json=_params,
+            headers=_headers,
+            timeout=_timeout
+        )
+
+        return res
+
+    @staticmethod
     def get_pa():
         # todo 获取pa
         return 'a'
 
-    @staticmethod
-    def update_token():
+    def update_token(self):
         # todo 更新token
-        pass
+
+        token_headers = {
+            "pa": "XyD3°",
+            "appInfo": json.dumps(self.config['Headers']['appInfo']),
+            "Connection": "close"
+        }
+
+        data = {
+            "mobile": self.config['userInfo']['username'],
+            "pwd": self.config['userInfo']['password']
+        }
+
+        res = self.rpost(
+            _url=yarl.URL.build(
+                scheme='https',
+                host='pocketapi.48.cn',
+                path='/user/api/v1/login/app/mobile'
+            ),
+            _headers=token_headers,
+            _params=data
+        )
+
+        r = UserInfo(res.json()['content']['userInfo'])
+        self.__token = res.json()['content']['token']
