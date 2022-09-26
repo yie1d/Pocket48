@@ -1,2 +1,2 @@
 from .client import Client
-from .typedefs import ttUserInfo
+from .typedefs import UserInfo
