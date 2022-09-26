@@ -80,7 +80,7 @@ class Client:
         配置项
         """
         if self.__config is None:
-            with open('config/config.toml', 'r') as f:
+            with open('config.toml', 'r') as f:
                 self.__config = toml.load(f)
 
         return self.__config

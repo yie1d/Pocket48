@@ -66,9 +66,8 @@ class UserInfo(BaseClass):
         super().__init__(_raw_data)
 
         for k, v in _raw_data.items():
-            self.__dict__[k] = v
+            self.__dict__[f'__{k}'] = v
 
-        self.__userId: Optional[int] = self.raw_data.get('userId')
         self.__nickname: Optional[str] = self.raw_data.get('nickname')
         self.__avatar: Optional[str] = self.raw_data.get('avatar')
         self.__exp: Optional[int] = self.raw_data.get('exp')
@@ -97,18 +96,64 @@ class UserInfo(BaseClass):
     @property
     def userId(self) -> Optional[int]:
         """用户id"""
-        return self.__userId
+        return self.__dict__.get('__userId')
 
     @property
-    def level(self) -> Optional[int]:
-        """用户等级"""
-        return self.__level
+    def nickname(self) -> Optional[str]:
+        """用户名称"""
+        return self.__dict__.get('__nickname')
 
     @property
     def avatar(self) -> Optional[str]:
         """头像url"""
-        return self.__avatar
+        return self.__dict__.get('__avatar')
 
+    @property
+    def exp(self) -> Optional[int]:
+        """经验值"""
+        return self.__dict__.get('__exp')
+
+    @property
+    def level(self) -> Optional[int]:
+        """用户等级"""
+        return self.__dict__.get('__level')
+
+    @property
+    def gender(self) -> Optional[int]:
+        """性别"""
+        return self.__dict__.get('__gender')
+
+    @property
+    def birthday(self) -> Optional[str]:
+        """生日"""
+        return self.__dict__.get('__birthday')
+
+    @property
+    def city(self) -> Optional[str]:
+        """城市"""
+        return self.__dict__.get('__city')
+
+    @property
+    def verification(self) -> Optional[bool]:
+        """验证/认证？"""
+        return self.__dict__.get('__verification')
+
+    @property
+    def money(self) -> Optional[int]:
+        """鸡腿数"""
+        return self.__dict__.get('__money')
+
+    @property
+    def support(self) -> Optional[int]:
+        """鸡翅数"""
+        return self.__dict__.get('__support')
+
+    @property
+    def permission(self) -> Optional[Permission]:
+        """权限？"""
+        return Permission(self.__dict__.get('__permission'))
+
+    # todo add others
     @property
     def adult(self) -> bool:
         """是否成年"""
