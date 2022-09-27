@@ -7,6 +7,7 @@ async def get_text():
     async with Client() as client:
         client.login()
 
+
 def main():
     loop = asyncio.get_event_loop()
     task = get_text()
