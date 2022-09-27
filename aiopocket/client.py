@@ -8,7 +8,7 @@ import aiohttp
 import toml
 import yarl
 import requests
-from tenacity import retry, stop_after_attempt
+from tenacity import retry as aretry, stop_after_attempt
 from retrying import retry
 
 from .typedefs import LoginUserInfo
@@ -21,13 +21,12 @@ class Client:
         """
         self.__config: Optional[dict] = None
 
-        self.__token: Optional[str] = None
+        self.__login_user: Optional[LoginUserInfo] = None
         self.__connector: Optional[aiohttp.TCPConnector] = None
         self.__session: Optional[aiohttp.ClientSession] = None
 
         self.__sem = asyncio.Semaphore(10)
         self.__loop = asyncio.get_running_loop()
-
 
     async def __aenter__(self) -> "Client":
         """
@@ -99,12 +98,12 @@ class Client:
             'appInfo': self.config['Headers']['appInfo']
         }
 
-        if self.__token:
-            self.update_token()
+        if self.__login_user.token is None:
+            self.login()
 
         return base_headers.update({
             'pa': self.get_pa(),
-            'token': self.__token
+            'token': self.__login_user.token
         })
 
     async def apost(self, _url, _params, _headers=None):
@@ -133,8 +132,8 @@ class Client:
         # todo 获取pa
         return 'a'
 
-    def update_token(self):
-        # todo 更新token
+    def login(self):
+        """用户登录"""
 
         token_headers = {
             "pa": "XyD3°",
@@ -157,5 +156,4 @@ class Client:
             _params=data
         )
 
-        r = LoginUserInfo(res.json()['content']['userInfo'])
-        self.__token = res.json()['content']['token']
+        self.__login_user = LoginUserInfo(res.json()['content']['userInfo'])

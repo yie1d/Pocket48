@@ -5,7 +5,7 @@ from aiopocket import Client
 
 async def get_text():
     async with Client() as client:
-        client.update_token()
+        client.login()
 
 def main():
     loop = asyncio.get_event_loop()
