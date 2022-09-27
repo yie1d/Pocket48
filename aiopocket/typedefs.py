@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 class BaseClass:
@@ -22,6 +22,29 @@ class BaseClass:
         if not isinstance(_raw_data, dict):
             raise TypeError(f'接收数据类型错误，应该为字典类型，当前类型为：{type(_raw_data)}，传入数据：{_raw_data}')
         self.__raw_data = _raw_data
+
+
+class UserInfo(BaseClass):
+    def __init__(self, _raw_data: dict):
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            self.__dict__[f'__{k}'] = v
+
+    @property
+    def userId(self) -> Optional[int]:
+        """用户id"""
+        return self.__dict__.get('__userId')
+
+    @property
+    def nickname(self) -> Optional[str]:
+        """用户名称"""
+        return self.__dict__.get('__nickname')
+
+    @property
+    def avatar(self) -> Optional[str]:
+        """头像url"""
+        return self.__dict__.get('__avatar')
 
 
 class Permission(BaseClass):
@@ -61,52 +84,72 @@ class Permission(BaseClass):
         return self.__dict__.get('__managerTeam')
 
 
-class UserInfo(BaseClass):
+class BindInfo(BaseClass):
     def __init__(self, _raw_data: dict):
+        """
+        绑定信息
+        """
         super().__init__(_raw_data)
 
-        for k, v in _raw_data.items():
+        for k, v in self.raw_data.items():
             self.__dict__[f'__{k}'] = v
 
-        self.__nickname: Optional[str] = self.raw_data.get('nickname')
-        self.__avatar: Optional[str] = self.raw_data.get('avatar')
-        self.__exp: Optional[int] = self.raw_data.get('exp')
-        self.__level: Optional[int] = self.raw_data.get('level')
-        self.__gender: Optional[int] = self.raw_data.get('gender')
-        self.__birthday: Optional[str] = self.raw_data.get('birthday')
-        self.__city: Optional[str] = self.raw_data.get('city')
-        self.__verification: Optional[bool] = self.raw_data.get('verification')
-        self.__money: Optional[int] = self.raw_data.get('money')
-        self.__support: Optional[int] = self.raw_data.get('support')
-        self.__permission: Permission = Permission(self.raw_data.get('permission'))
-        self.__roleName: Optional[str] = self.raw_data.get('roleName')
-        self.__roleId: Optional[int] = self.raw_data.get('roleId')
-        self.__deviceId: Optional[str] = self.raw_data.get('deviceId')
-        self.__bindInfo: Optional[List[dict]] = self.raw_data.get('bindInfo')
-        self.__badgeCount: Optional[int] = self.raw_data.get('badgeCount')
-        self.__friends: Optional[int] = self.raw_data.get('friends')
-        self.__followers: Optional[int] = self.raw_data.get('followers')
-        self.__token: Optional[str] = self.raw_data.get('token')
-        self.__bigSmallInfo = self.raw_data.get('bigSmallInfo')
-        self.__commentStatus: Optional[int] = self.raw_data.get('commentStatus')
-
-        self.__adult: Optional[bool] = True if self.raw_data.get('adult') == 'True' else False
-        self.__badge: Optional[List[str]] = self.raw_data.get('badge')
+    @property
+    def bindType(self) -> Optional[str]:
+        """绑定平台"""
+        return self.__dict__.get('__bindType')
 
     @property
-    def userId(self) -> Optional[int]:
-        """用户id"""
-        return self.__dict__.get('__userId')
+    def uniqueId(self) -> Optional[str]:
+        """uniqueId"""
+        return self.__dict__.get('__uniqueId')
 
     @property
     def nickname(self) -> Optional[str]:
-        """用户名称"""
+        """绑定平台用户名"""
         return self.__dict__.get('__nickname')
 
+
+class BigSmallInfo(BaseClass):
+    def __init__(self, _raw_data: dict):
+        """
+        两个用户之间的关系类？
+        """
+        super().__init__(_raw_data)
+
+        for k, v in _raw_data.items():
+            if k in ['smallUserInfo', 'bigUserInfo']:
+                v = UserInfo(v)
+            self.__dict__[f'__{k}'] = v
+
     @property
-    def avatar(self) -> Optional[str]:
-        """头像url"""
-        return self.__dict__.get('__avatar')
+    def relationship(self) -> Optional[bool]:
+        """关系？"""
+        return self.__dict__.get('__relationship')
+
+    @property
+    def bigUserInfo(self) -> UserInfo:
+        return self.__dict__.get('__bigUserInfo')
+
+    @property
+    def smallUserInfo(self) -> UserInfo:
+        return self.__dict__.get('__smallUserInfo')
+
+
+class LoginUserInfo(UserInfo):
+    def __init__(self, _raw_data: dict):
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            if k == 'permission':
+                v = Permission(v)
+                self.__dict__[f'__{k}'] = v
+            if k == 'bindInfo':
+                v = [BindInfo(_info) for _info in v]
+                self.__dict__[f'__{k}'] = v
+            if k == 'bigSmallInfo':
+                v = BigSmallInfo(v)
+                self.__dict__[f'__{k}'] = v
 
     @property
     def exp(self) -> Optional[int]:
@@ -151,15 +194,129 @@ class UserInfo(BaseClass):
     @property
     def permission(self) -> Optional[Permission]:
         """权限？"""
-        return Permission(self.__dict__.get('__permission'))
+        return self.__dict__.get('__permission')
 
-    # todo add others
     @property
-    def adult(self) -> bool:
-        """是否成年"""
-        return self.__adult
+    def roleName(self) -> Optional[str]:
+        """？？？"""
+        return self.__dict__.get('__roleName')
+
+    @property
+    def roleId(self) -> Optional[int]:
+        """?"""
+        return self.__dict__.get('__roleId')
+
+    @property
+    def deviceId(self) -> Optional[str]:
+        """设备序列号"""
+        return self.__dict__.get('__deviceId')
+
+    @property
+    def bindInfo(self) -> Optional[List[BindInfo]]:
+        """绑定信息"""
+        return self.__dict__.get('__bindInfo')
+
+    @property
+    def badgeCount(self) -> Optional[int]:
+        """徽章数量"""
+        return self.__dict__.get('__badgeCount')
+
+    @property
+    def friends(self) -> Optional[int]:
+        """关注人数"""
+        return self.__dict__.get('__friends')
+
+    @property
+    def followers(self) -> Optional[int]:
+        """??"""
+        return self.__dict__.get('__followers')
+
+    @property
+    def token(self) -> Optional[str]:
+        """用户token"""
+        return self.__dict__.get('__token')
+
+    @property
+    def bigSmallInfo(self) -> Optional[BigSmallInfo]:
+        """???"""
+        return self.__dict__.get('__bigSmallInfo')
+
+    @property
+    def commentStatus(self) -> Optional[int]:
+        """???"""
+        return self.__dict__.get('__commentStatus')
+
+    @property
+    def bgImg(self) -> Optional[str]:
+        """???"""
+        return self.__dict__.get('__bgImg')
 
     @property
     def badge(self) -> List[str]:
         """徽章列表？"""
-        return self.__badge
+        return self.__dict__.get('__badge')
+
+    @property
+    def vip(self) -> Optional[bool]:
+        """是否是vip"""
+        return self.__dict__.get('__vip')
+
+    @property
+    def teamLogo(self) -> Optional:
+        """队伍logo"""
+        return self.__dict__.get('__teamLogo')
+
+    @property
+    def card(self) -> Optional[int]:
+        """???"""
+        return self.__dict__.get('__card')
+
+    @property
+    def expArr(self) -> Optional[List[int]]:
+        """经验列表"""
+        return self.__dict__.get('__expArr')
+
+    @property
+    def pfUrl(self) -> Optional[str]:
+        """???"""
+        return self.__dict__.get('__pfUrl')
+
+    @property
+    def editImg(self) -> Optional[str]:
+        """???"""
+        return self.__dict__.get('__editImg')
+
+    @property
+    def editName(self) -> Optional[str]:
+        """???"""
+        return self.__dict__.get('__editName')
+
+    @property
+    def teenagersPassword(self) -> Optional[str, int]:
+        """青少年模式密码"""
+        return self.__dict__.get('__teenagersPassword')
+
+    @property
+    def adult(self) -> Optional[bool]:
+        """是否成年"""
+        return self.__dict__.get('__adult')
+
+    @property
+    def continueAuth(self) -> Optional[bool]:
+        """是否需要二次验证"""
+        return self.__dict__.get('__bool')
+
+    @property
+    def outOfCn(self) -> Optional[bool]:
+        """???"""
+        return self.__dict__.get('__outOfCn')
+
+    @property
+    def validTime(self) -> Optional[int]:
+        """登录有效时间"""
+        return self.__dict__.get('__validTime')
+
+    @property
+    def teenagersTips(self) -> Optional[str]:
+        """青少年使用公告"""
+        return self.__dict__.get('__teenagersTips')

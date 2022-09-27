@@ -11,7 +11,7 @@ import requests
 from tenacity import retry, stop_after_attempt
 from retrying import retry
 
-from .typedefs import UserInfo
+from .typedefs import LoginUserInfo
 
 
 class Client:
@@ -157,5 +157,5 @@ class Client:
             _params=data
         )
 
-        r = UserInfo(res.json()['content']['userInfo'])
+        r = LoginUserInfo(res.json()['content']['userInfo'])
         self.__token = res.json()['content']['token']

@@ -1,2 +1,2 @@
 from .client import Client
-from .typedefs import UserInfo
+from .typedefs import LoginUserInfo
