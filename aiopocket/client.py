@@ -1,6 +1,11 @@
 import asyncio
 import os
 import json
+
+from uuid import uuid1
+from time import time
+from hashlib import md5
+from base64 import b64encode
 from typing import List, Dict, Tuple, Optional, Union
 from pprint import pprint
 
@@ -21,6 +26,7 @@ class Client:
         """
         self.__config: Optional[dict] = None
 
+        self.__uuid: Optional[str] = str(uuid1()).replace('-', '')
         self.__login_user: Optional[LoginUserInfo] = None
         self.__connector: Optional[aiohttp.TCPConnector] = None
         self.__session: Optional[aiohttp.ClientSession] = None
@@ -114,29 +120,37 @@ class Client:
 
     @staticmethod
     @retry(stop_max_attempt_number=3, wait_fixed=3)
-    def rpost(_url: yarl.URL, _params: Dict[str, str], _headers: Optional[Dict[str, str]] = None, _timeout: int = 3):
+    def rpost(_url: yarl.URL, _params: Dict[str, str], _headers: Optional[Dict[str, str]] = None,
+              _timeout: int = 3) -> dict:
         """
         发起普通post请求
         """
-        res = requests.post(
+        res_json = requests.post(
             url=str(_url),
             json=_params,
             headers=_headers,
             timeout=_timeout
-        )
+        ).json()
 
-        return res
+        return res_json
 
-    @staticmethod
-    def get_pa():
-        # todo 获取pa
-        return 'a'
+    def get_pa(self) -> str:
+        """
+        获取pa值
+        """
+        _PostKey = self.config['paInfo']['PostKey']
+        _PostKeyVersion = self.config['paInfo']['PostKeyVersion']
+        _UUID = self.__uuid
+        _NOW_TIME = str(int(time() * 1000))
+        _MD5 = md5((_NOW_TIME + _UUID + _PostKey).encode()).hexdigest()
+
+        return b64encode((_NOW_TIME + ',' + _UUID + ',' + _MD5 + ',' + _PostKeyVersion).encode()).decode()
 
     def login(self):
         """用户登录"""
 
         token_headers = {
-            "pa": "XyD3°",
+            "pa": self.get_pa(),
             "appInfo": json.dumps(self.config['Headers']['appInfo']),
             "Connection": "close"
         }
@@ -146,7 +160,7 @@ class Client:
             "pwd": self.config['userInfo']['password']
         }
 
-        res = self.rpost(
+        res_json = self.rpost(
             _url=yarl.URL.build(
                 scheme='https',
                 host='pocketapi.48.cn',
@@ -156,4 +170,4 @@ class Client:
             _params=data
         )
 
-        self.__login_user = LoginUserInfo(res.json()['content']['userInfo'])
+        self.__login_user = LoginUserInfo(res_json['content']['userInfo'])

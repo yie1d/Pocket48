@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 
 class BaseClass:
@@ -118,7 +118,9 @@ class BigSmallInfo(BaseClass):
         super().__init__(_raw_data)
 
         for k, v in _raw_data.items():
-            if k in ['smallUserInfo', 'bigUserInfo']:
+            if k == 'smallUserInfo':
+                v = [UserInfo(_userInfo) for _userInfo in v]
+            if k in 'bigUserInfo':
                 v = UserInfo(v)
             self.__dict__[f'__{k}'] = v
 
@@ -292,7 +294,7 @@ class LoginUserInfo(UserInfo):
         return self.__dict__.get('__editName')
 
     @property
-    def teenagersPassword(self) -> Optional[str, int]:
+    def teenagersPassword(self) -> Union[str, int]:
         """青少年模式密码"""
         return self.__dict__.get('__teenagersPassword')
 
