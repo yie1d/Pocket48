@@ -325,7 +325,7 @@ class LoginUserInfo(UserInfo):
         return self.__dict__.get('teenagersTips')
 
 
-class StarBasicInfo(UserInfo):
+class StarUserInfo(UserInfo):
     def __init__(self, _raw_data: dict):
         """
         xox基础信息
@@ -470,6 +470,7 @@ class StarBasicInfo(UserInfo):
 
 class StarHistory(BaseClass):
     def __init__(self, _raw_data: dict):
+        """经历类"""
         super().__init__(_raw_data)
 
         for k, v in self.raw_data.items():
@@ -486,3 +487,9 @@ class StarHistory(BaseClass):
         return self.__dict__.get('content')
 
 
+class StarBasicInfo:
+    """查询到的信息"""
+    def __init__(self, _raw_data):
+        self.starInfo = StarUserInfo(_raw_data['starInfo'])
+        self.fansRank = [UserInfo(fans) for fans in _raw_data['fansRank']]
+        self.history = [StarHistory(_history) for _history in _raw_data['history']]
