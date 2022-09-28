@@ -7,7 +7,6 @@ from time import time
 from hashlib import md5
 from base64 import b64encode
 from typing import List, Dict, Tuple, Optional, Union
-from pprint import pprint
 
 import aiohttp
 import toml
