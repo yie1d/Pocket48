@@ -1,0 +1,3 @@
+
+class PocketTypeError(Exception):
+    pass
