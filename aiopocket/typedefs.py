@@ -466,3 +466,23 @@ class StarBasicInfo(UserInfo):
     def status(self) -> Optional[int]:
         """xox状态？"""
         return self.__dict__.get('status')
+
+
+class StarHistory(BaseClass):
+    def __init__(self, _raw_data: dict):
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            self.__dict__[k] = v
+
+    @property
+    def ctime(self) -> Optional[str]:
+        """发生时间"""
+        return self.__dict__.get('ctime')
+
+    @property
+    def content(self) -> Optional[str]:
+        """发生时间"""
+        return self.__dict__.get('content')
+
+
