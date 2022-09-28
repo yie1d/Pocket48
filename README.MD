@@ -1,6 +1,8 @@
   ##  
-  作者：XyD3°  
-  QQ：2608019886  
+  作者：XyD3°
+  ## 
+  项目简介  
+  通过aiohttp实现异步抓取口袋48app的各种信息  
 
   <details open>
   <summary>更新记录</summary>
