@@ -15,7 +15,8 @@ import requests
 from tenacity import retry as aretry, stop_after_attempt
 from retrying import retry
 
-from .typedefs import LoginUserInfo
+from .typedefs import LoginUserInfo, UserInfo, StarBasicInfo
+from .exceptions import PocketTypeError
 
 
 class Client:
@@ -26,7 +27,8 @@ class Client:
         self.__config: Optional[dict] = None
 
         self.__uuid: Optional[str] = str(uuid1()).replace('-', '')
-        self.__login_user: Optional[LoginUserInfo] = None
+        self.__base_url = yarl.URL.build(scheme='https', host='pocketapi.48.cn')
+        self.__login_user: Optional[LoginUserInfo] = LoginUserInfo({})
         self.__connector: Optional[aiohttp.TCPConnector] = None
         self.__session: Optional[aiohttp.ClientSession] = None
 
@@ -43,7 +45,8 @@ class Client:
         """
         异步上下文管理器 退出时
         """
-        pass
+        if self.connector is not None:
+            await self.connector.close()
 
     @property
     def connector(self) -> aiohttp.TCPConnector:
@@ -71,6 +74,7 @@ class Client:
             time_out = aiohttp.ClientTimeout(total=3)
 
             self.__session = aiohttp.ClientSession(
+                base_url=self.__base_url,
                 connector=self.connector,
                 loop=self.__loop,
                 timeout=time_out
@@ -90,7 +94,20 @@ class Client:
         return self.__config
 
     @property
-    def get_headers(self):
+    def pa(self) -> str:
+        """
+        获取pa值
+        """
+        _PostKey = self.config['paInfo']['PostKey']
+        _PostKeyVersion = self.config['paInfo']['PostKeyVersion']
+        _UUID = self.__uuid
+        _NOW_TIME = str(int(time() * 1000))
+        _MD5 = md5((_NOW_TIME + _UUID + _PostKey).encode()).hexdigest()
+
+        return b64encode((_NOW_TIME + ',' + _UUID + ',' + _MD5 + ',' + _PostKeyVersion).encode()).decode()
+
+    @property
+    def headers(self):
         """
         基本headers
         """
@@ -104,23 +121,17 @@ class Client:
         }
 
         if self.__login_user.token is None:
-            self.login()
+            self.user_login()
 
         return base_headers.update({
-            'pa': self.get_pa(),
+            'pa': self.pa,
             'token': self.__login_user.token
         })
 
-    async def apost(self, _url, _params, _headers=None):
-        async with self.__sem:
-            async with self.session.post() as resp:
-                # todo 发起请求
-                pass
-
     @staticmethod
     @retry(stop_max_attempt_number=3, wait_fixed=3)
-    def rpost(_url: yarl.URL, _params: Dict[str, str], _headers: Optional[Dict[str, str]] = None,
-              _timeout: int = 3) -> dict:
+    def __rpost(_url: yarl.URL, _params: Dict[str, str], _headers: Optional[Dict[str, str]] = None,
+                _timeout: int = 3) -> dict:
         """
         发起普通post请求
         """
@@ -133,23 +144,11 @@ class Client:
 
         return res_json
 
-    def get_pa(self) -> str:
-        """
-        获取pa值
-        """
-        _PostKey = self.config['paInfo']['PostKey']
-        _PostKeyVersion = self.config['paInfo']['PostKeyVersion']
-        _UUID = self.__uuid
-        _NOW_TIME = str(int(time() * 1000))
-        _MD5 = md5((_NOW_TIME + _UUID + _PostKey).encode()).hexdigest()
-
-        return b64encode((_NOW_TIME + ',' + _UUID + ',' + _MD5 + ',' + _PostKeyVersion).encode()).decode()
-
-    def login(self):
+    def user_login(self):
         """用户登录"""
 
         token_headers = {
-            "pa": self.get_pa(),
+            "pa": self.pa,
             "appInfo": json.dumps(self.config['Headers']['appInfo']),
             "Connection": "close"
         }
@@ -159,7 +158,7 @@ class Client:
             "pwd": self.config['userInfo']['password']
         }
 
-        res_json = self.rpost(
+        res_json = self.__rpost(
             _url=yarl.URL.build(
                 scheme='https',
                 host='pocketapi.48.cn',
@@ -170,3 +169,41 @@ class Client:
         )
 
         self.__login_user = LoginUserInfo(res_json['content']['userInfo'])
+
+    async def __apost(self, _url: yarl.URL, _params: dict, _headers: Optional[dict] = None) -> dict:
+        if _headers is None:
+            _headers = self.headers
+
+        async with self.__sem:
+            async with self.session.post(
+                    url=_url,
+                    json=_params,
+                    headers=_headers
+            ) as resp:
+                res_json = await resp.json()
+                print(res_json)
+
+        if res_json.get('message') in ['token解密失败', '非法授权']:
+            self.user_login()
+        else:
+            return res_json
+
+    async def get_starBasicInfo(self, _id: int) -> StarBasicInfo:
+        """
+        通过成员id获取成员基本信息
+        """
+        if isinstance(_id, int):
+            url = yarl.URL.build(
+                path='/user/api/v1/user/star/archives'
+            )
+            params = {
+                'lastTime': 0,
+                'memberId': _id,
+                'limit': 20
+            }
+        else:
+            raise PocketTypeError("类型错误！")
+
+        res_json = await self.__apost(url, params)
+
+        return StarBasicInfo(res_json['content'])

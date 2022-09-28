@@ -3,17 +3,17 @@ import asyncio
 from aiopocket import Client
 
 
-async def get_text():
+async def main():
     async with Client() as client:
-        client.login()
+        await client.get_starBasicInfo(417321)
 
 
-def main():
-    loop = asyncio.get_event_loop()
-    task = get_text()
-    loop.run_until_complete(task)
-    loop.close()
+async def demo():
+    async with Client() as client:
+        print(client.user_login())
+        print(await client.get_starBasicInfo(417321))
 
 
 if __name__ == '__main__':
-    main()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
