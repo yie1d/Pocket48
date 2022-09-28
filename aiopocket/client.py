@@ -12,7 +12,7 @@ import aiohttp
 import toml
 import yarl
 import requests
-from tenacity import retry as aretry, stop_after_attempt
+from tenacity import retry as aretry, stop_after_attempt, wait_fixed
 from retrying import retry
 
 from .typedefs import LoginUserInfo, UserInfo, StarBasicInfo
@@ -153,7 +153,7 @@ class Client:
             "Connection": "close"
         }
 
-        data = {
+        params = {
             "mobile": self.config['userInfo']['username'],
             "pwd": self.config['userInfo']['password']
         }
@@ -165,11 +165,12 @@ class Client:
                 path='/user/api/v1/login/app/mobile'
             ),
             _headers=token_headers,
-            _params=data
+            _params=params
         )
 
         self.__login_user = LoginUserInfo(res_json['content']['userInfo'])
 
+    @aretry(stop=stop_after_attempt(5), wait=wait_fixed(3))
     async def __apost(self, _url: yarl.URL, _params: dict, _headers: Optional[dict] = None) -> dict:
         if _headers is None:
             _headers = self.headers
