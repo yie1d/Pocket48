@@ -3,7 +3,7 @@ from .exceptions import PocketTypeError
 
 
 class BaseClass:
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """
         源数据管理
         """
@@ -19,14 +19,14 @@ class BaseClass:
         return self.__raw_data
 
     @raw_data.setter
-    def raw_data(self, _raw_data: dict):
+    def raw_data(self, _raw_data: dict) -> None:
         if not isinstance(_raw_data, dict):
             raise PocketTypeError(f'接收数据类型错误，应该为字典类型，当前类型为：{type(_raw_data)}，传入数据：{_raw_data}')
         self.__raw_data = _raw_data
 
 
 class UserInfo(BaseClass):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         super().__init__(_raw_data)
 
         for k, v in self.raw_data.items():
@@ -47,9 +47,84 @@ class UserInfo(BaseClass):
         """头像url"""
         return self.__dict__.get('avatar')
 
+    @property
+    def badge(self) -> Optional[List[str]]:
+        """徽章列表？"""
+        return self.__dict__.get('badge')
+
+    @property
+    def level(self) -> Optional[int]:
+        """用户等级"""
+        return self.__dict__.get('level')
+
+    @property
+    def isStar(self) -> Optional[bool]:
+        """是否是xox"""
+        return self.__dict__.get('isStar')
+
+    @property
+    def friends(self) -> Optional[int]:
+        """关注人数"""
+        return self.__dict__.get('friends')
+
+    @property
+    def followers(self) -> Optional[int]:
+        """收到鲜花？"""
+        return self.__dict__.get('followers')
+
+    @property
+    def teamLogo(self) -> Optional[str]:
+        """队伍logo"""
+        return self.__dict__.get('teamLogo')
+
+    @property
+    def signature(self) -> Optional[str]:
+        """签名？"""
+        return self.__dict__.get('signature')
+
+    @property
+    def bgImg(self) -> Optional[str]:
+        """背景图片？"""
+        return self.__dict__.get('bgImg')
+
+    @property
+    def vip(self) -> Optional[bool]:
+        """是否是vip"""
+        return self.__dict__.get('vip')
+
+    @property
+    def userRole(self) -> Optional[int]:
+        """用户角色  xox好像是3  普通用户是1"""
+        return self.__dict__.get('userRole')
+
+    @property
+    def pfUrl(self) -> Optional[str]:
+        """???"""
+        return self.__dict__.get('pfUrl')
+
+    @property
+    def effectUser(self) -> Optional[bool]:
+        """是否是影响用户"""
+        return self.__dict__.get('effectUser')
+
+    @property
+    def realNickName(self) -> Optional[str]:
+        """用户自定义呢称"""
+        return self.__dict__.get('realNickName')
+
+    @property
+    def starName(self) -> Optional[str]:
+        """xox姓名"""
+        return self.__dict__.get('starName')
+
+    @property
+    def star(self) -> Optional[bool]:
+        """是否是xox"""
+        return self.__dict__.get('star')
+
 
 class Permission(BaseClass):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """
         用户权限相关
         """
@@ -86,7 +161,7 @@ class Permission(BaseClass):
 
 
 class BindInfo(BaseClass):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """
         绑定信息
         """
@@ -112,7 +187,7 @@ class BindInfo(BaseClass):
 
 
 class BigSmallInfo(BaseClass):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """
         两个用户之间的关系类？
         """
@@ -140,7 +215,7 @@ class BigSmallInfo(BaseClass):
 
 
 class LoginUserInfo(UserInfo):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         super().__init__(_raw_data)
 
         for k, v in self.raw_data.items():
@@ -158,11 +233,6 @@ class LoginUserInfo(UserInfo):
     def exp(self) -> Optional[int]:
         """经验值"""
         return self.__dict__.get('exp')
-
-    @property
-    def level(self) -> Optional[int]:
-        """用户等级"""
-        return self.__dict__.get('level')
 
     @property
     def gender(self) -> Optional[int]:
@@ -225,16 +295,6 @@ class LoginUserInfo(UserInfo):
         return self.__dict__.get('badgeCount')
 
     @property
-    def friends(self) -> Optional[int]:
-        """关注人数"""
-        return self.__dict__.get('friends')
-
-    @property
-    def followers(self) -> Optional[int]:
-        """??"""
-        return self.__dict__.get('followers')
-
-    @property
     def token(self) -> Optional[str]:
         """用户token"""
         return self.__dict__.get('token')
@@ -250,26 +310,6 @@ class LoginUserInfo(UserInfo):
         return self.__dict__.get('commentStatus')
 
     @property
-    def bgImg(self) -> Optional[str]:
-        """???"""
-        return self.__dict__.get('bgImg')
-
-    @property
-    def badge(self) -> List[str]:
-        """徽章列表？"""
-        return self.__dict__.get('badge')
-
-    @property
-    def vip(self) -> Optional[bool]:
-        """是否是vip"""
-        return self.__dict__.get('vip')
-
-    @property
-    def teamLogo(self) -> Optional:
-        """队伍logo"""
-        return self.__dict__.get('teamLogo')
-
-    @property
     def card(self) -> Optional[int]:
         """???"""
         return self.__dict__.get('card')
@@ -278,11 +318,6 @@ class LoginUserInfo(UserInfo):
     def expArr(self) -> Optional[List[int]]:
         """经验列表"""
         return self.__dict__.get('expArr')
-
-    @property
-    def pfUrl(self) -> Optional[str]:
-        """???"""
-        return self.__dict__.get('pfUrl')
 
     @property
     def editImg(self) -> Optional[str]:
@@ -326,16 +361,11 @@ class LoginUserInfo(UserInfo):
 
 
 class StarUserInfo(UserInfo):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """
         xox基础信息
         """
         super().__init__(_raw_data)
-
-    @property
-    def starName(self) -> Optional[str]:
-        """xox姓名"""
-        return self.__dict__.get('starName')
 
     @property
     def starAvatar(self) -> Optional[str]:
@@ -469,7 +499,7 @@ class StarUserInfo(UserInfo):
 
 
 class StarHistory(BaseClass):
-    def __init__(self, _raw_data: dict):
+    def __init__(self, _raw_data: dict) -> None:
         """经历类"""
         super().__init__(_raw_data)
 
@@ -489,7 +519,63 @@ class StarHistory(BaseClass):
 
 class StarBasicInfo:
     """查询到的信息"""
+
     def __init__(self, _raw_data):
         self.starInfo = StarUserInfo(_raw_data['starInfo'])
         self.fansRank = [UserInfo(fans) for fans in _raw_data['fansRank']]
         self.history = [StarHistory(_history) for _history in _raw_data['history']]
+
+
+class UserBasicInfo(BaseClass):
+    def __init__(self, _raw_data: dict) -> None:
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            if k == 'baseUserInfo':
+                v = UserInfo(v)
+            self.__dict__[k] = v
+
+    @property
+    def baseUserInfo(self) -> UserInfo:
+        """用户基础信息"""
+        return self.__dict__.get('baseUserInfo')
+
+    @property
+    def isFriend(self) -> Optional[bool]:
+        """是否是朋友"""
+        return self.__dict__.get('isFriend')
+
+    @property
+    def relationship(self) -> Optional[int]:
+        """关系"""
+        return self.__dict__.get('relationship')
+
+    @property
+    def topRank(self) -> Optional[list]:
+        """??"""
+        return self.__dict__.get('topRank')
+
+    @property
+    def clubCount(self) -> Optional[int]:
+        """???"""
+        return self.__dict__.get('clubCount')
+
+    @property
+    def rankNum(self) -> Optional[int]:
+        """???"""
+        return self.__dict__.get('rankNum')
+
+    @property
+    def inBlacklist(self) -> Optional[bool]:
+        """是否黑名单"""
+        return self.__dict__.get('inBlacklist')
+
+    @property
+    def qingni(self) -> Optional:
+        """？？？"""
+        return self.__dict__.get('qingni')
+
+    @property
+    def friend(self) -> Optional[bool]:
+        """朋友？"""
+        return self.__dict__.get('friend')

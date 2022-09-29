@@ -3,9 +3,13 @@ import asyncio
 from aiopocket import Client
 
 
+# https://source.48.cn/
 async def main():
     async with Client() as client:
-        await client.get_starBasicInfo(417321)
+        # 农燕萍   417321
+        m = await client.get_userInfo(417321)
+        # await client.get_starBasicInfo()
+        # await client.get_starBasicInfo(417321)
 
 
 async def demo():

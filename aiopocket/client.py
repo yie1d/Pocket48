@@ -15,8 +15,9 @@ import requests
 from tenacity import retry as aretry, stop_after_attempt, wait_fixed
 from retrying import retry
 
-from .typedefs import LoginUserInfo, UserInfo, StarBasicInfo
+from .typedefs import LoginUserInfo, UserInfo, StarBasicInfo, UserBasicInfo
 from .exceptions import PocketTypeError
+from .utils import show
 
 
 class Client:
@@ -172,6 +173,7 @@ class Client:
 
     @aretry(stop=stop_after_attempt(5), wait=wait_fixed(3))
     async def __apost(self, _url: yarl.URL, _params: dict, _headers: Optional[dict] = None) -> dict:
+        """发起异步post请求"""
         if _headers is None:
             _headers = self.headers
 
@@ -191,7 +193,7 @@ class Client:
 
     async def get_starBasicInfo(self, _id: int) -> StarBasicInfo:
         """
-        通过成员id获取成员基本信息
+        通过成员id获取成员基本信息（无法获取普通用户信息）
         """
         if isinstance(_id, int):
             url = yarl.URL.build(
@@ -208,3 +210,16 @@ class Client:
         res_json = await self.__apost(url, params)
 
         return StarBasicInfo(res_json['content'])
+
+    async def get_userInfo(self, _id: int):
+        """通过id获取用户信息（适用于所有用户）"""
+        url = yarl.URL.build(
+            path='/user/api/v1/user/info/home'
+        )
+        params = {
+            'userId': _id
+        }
+
+        res_json = await self.__apost(url, params)
+
+        return UserBasicInfo(res_json['content'])
