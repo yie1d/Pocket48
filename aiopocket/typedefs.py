@@ -542,6 +542,7 @@ class StarBasicInfo:
 
 class UserBasicInfo(BaseClass):
     def __init__(self, _raw_data: dict) -> None:
+        """用户基础信息类"""
         super().__init__(_raw_data)
 
         for k, v in self.raw_data.items():
@@ -597,6 +598,7 @@ class UserBasicInfo(BaseClass):
 
 class RoomInfo(BaseClass):
     def __init__(self, _raw_data: dict):
+        """房间信息"""
         super().__init__(_raw_data)
 
         for k, v in _raw_data.items():
@@ -819,6 +821,7 @@ class UserFunction(BaseClass):
 
 class UserConfig(BaseClass):
     def __init__(self, _raw_data: dict):
+        """用户配置"""
         super().__init__(_raw_data)
 
         for k, v in _raw_data.items():
@@ -837,6 +840,7 @@ class UserConfig(BaseClass):
 
 class BaseRoomInfo:
     def __init__(self, _raw_data: dict):
+        """房间基础信息"""
         for k, v in _raw_data.items():
             if k == 'roomInfo':
                 v = RoomInfo(v)
