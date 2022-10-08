@@ -876,5 +876,3 @@ class BaseRoomInfo:
     def openAnonymousStatus(self) -> Optional[int]:
         """打开匿名状态？"""
         return self.__dict__.get('openAnonymousStatus')
-
-
