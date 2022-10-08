@@ -518,12 +518,26 @@ class StarHistory(BaseClass):
 
 
 class StarBasicInfo:
-    """查询到的信息"""
+    def __init__(self, _raw_data: dict):
+        """查询到的信息"""
+        self.__dict__['starInfo'] = StarUserInfo(_raw_data['starInfo'])
+        self.__dict__['fansRank'] = [UserInfo(fans) for fans in _raw_data['fansRank']]
+        self.__dict__['history'] = [StarHistory(_history) for _history in _raw_data['history']]
 
-    def __init__(self, _raw_data):
-        self.starInfo = StarUserInfo(_raw_data['starInfo'])
-        self.fansRank = [UserInfo(fans) for fans in _raw_data['fansRank']]
-        self.history = [StarHistory(_history) for _history in _raw_data['history']]
+    @property
+    def starInfo(self) -> StarUserInfo:
+        """xox信息"""
+        return self.__dict__.get('starInfo')
+
+    @property
+    def fansRank(self) -> List[UserInfo]:
+        """粉丝排名"""
+        return self.__dict__.get('fansRank')
+
+    @property
+    def history(self) -> List[StarHistory]:
+        """xox历史经历"""
+        return self.__dict__.get('history')
 
 
 class UserBasicInfo(BaseClass):
@@ -579,3 +593,288 @@ class UserBasicInfo(BaseClass):
     def friend(self) -> Optional[bool]:
         """朋友？"""
         return self.__dict__.get('friend')
+
+
+class RoomInfo(BaseClass):
+    def __init__(self, _raw_data: dict):
+        super().__init__(_raw_data)
+
+        for k, v in _raw_data.items():
+            self.__dict__[k] = v
+
+    @property
+    def roomId(self) -> Optional[str]:
+        """房间id"""
+        return self.__dict__.get('roomId')
+
+    @property
+    def chatRoomId(self) -> Optional[str]:
+        """聊天房间id"""
+        return self.__dict__.get('chatRoomId')
+
+    @property
+    def roomName(self) -> Optional[str]:
+        """房间名称"""
+        return self.__dict__.get('roomName')
+
+    @property
+    def roomAvatar(self) -> Optional[str]:
+        """房间头像"""
+        return self.__dict__.get('roomAvatar')
+
+    @property
+    def roomTopic(self) -> Optional[str]:
+        """房间话题"""
+        return self.__dict__.get('roomTopic')
+
+    @property
+    def ctime(self) -> Optional[str]:
+        """房间创建时间"""
+        return self.__dict__.get('ctime')
+
+    @property
+    def roomType(self) -> Optional[int]:
+        """房间类型"""
+        return self.__dict__.get('roomType')
+
+    @property
+    def chatType(self) -> Optional[int]:
+        """聊天类型"""
+        return self.__dict__.get('chatType')
+
+    @property
+    def ownerId(self) -> Optional[str]:
+        """房主id"""
+        return self.__dict__.get('ownerId')
+
+    @property
+    def ownerName(self) -> Optional[str]:
+        """房主名称"""
+        return self.__dict__.get('ownerName')
+
+    @property
+    def icon(self) -> Optional[List[str]]:
+        """房间icon"""
+        return self.__dict__.get('icon')
+
+    @property
+    def bubbleId(self) -> Optional[str]:
+        """气泡id"""
+        return self.__dict__.get('bubbleId')
+
+    @property
+    def bgImg(self) -> Optional[str]:
+        """背景图片"""
+        return self.__dict__.get('bgImg')
+
+    @property
+    def welcomeMessage(self) -> Optional[str]:
+        """房间欢迎信息"""
+        return self.__dict__.get('welcomeMessage')
+
+    @property
+    def welcomeManagerName(self) -> Optional[str]:
+        """欢迎管理员名称"""
+        return self.__dict__.get('welcomeManagerName')
+
+    @property
+    def welcomeManagerId(self) -> Optional[str]:
+        """欢迎管理员id"""
+        return self.__dict__.get('welcomeManagerId')
+
+    @property
+    def welcomeManagerAvatar(self) -> Optional[str]:
+        """欢迎管理员头像"""
+        return self.__dict__.get('welcomeManagerAvatar')
+
+    @property
+    def replyKey(self) -> Optional[List]:
+        """回复密钥"""
+        return self.__dict__.get('replyKey')
+
+    @property
+    def qingNi(self) -> Optional[bool]:
+        """？？？"""
+        return self.__dict__.get('qingNi')
+
+    @property
+    def redPackageIcon(self) -> Optional[str]:
+        """红包图标"""
+        return self.__dict__.get('redPackageIcon')
+
+    @property
+    def managerAuditExplain(self) -> Optional[str]:
+        """管理员申请信息"""
+        return self.__dict__.get('managerAuditExplain')
+
+    @property
+    def crm(self) -> Optional[str]:
+        """？？？"""
+        return self.__dict__.get('crm')
+
+    @property
+    def chatStatus(self) -> Optional[int]:
+        """聊天状态"""
+        return self.__dict__.get('chatStatus')
+
+    @property
+    def ownerPf(self) -> Optional[str]:
+        """房主pf"""
+        return self.__dict__.get('ownerPf')
+
+
+class UserFunction(BaseClass):
+    def __init__(self, _raw_data: dict):
+        """用户功能"""
+        super().__init__(_raw_data)
+
+        for k, v in _raw_data.items():
+            self.__dict__[k] = v
+
+    @property
+    def sendText(self) -> Optional[bool]:
+        """发送文本"""
+        return self.__dict__.get('sendText')
+
+    @property
+    def sendImage(self) -> Optional[bool]:
+        """发送图片"""
+        return self.__dict__.get('sendImage')
+
+    @property
+    def sendVideo(self) -> Optional[bool]:
+        """发送视频"""
+        return self.__dict__.get('sendVideo')
+
+    @property
+    def sendVoice(self) -> Optional[bool]:
+        """发送语音"""
+        return self.__dict__.get('sendVoice')
+
+    @property
+    def sendGif(self) -> Optional[bool]:
+        """发送gif"""
+        return self.__dict__.get('sendGif')
+
+    @property
+    def sendEmoticon(self) -> Optional[bool]:
+        """发送表情"""
+        return self.__dict__.get('sendEmoticon')
+
+    @property
+    def sendForward(self) -> Optional[bool]:
+        """转发"""
+        return self.__dict__.get('sendForward')
+
+    @property
+    def sendGift(self) -> Optional[bool]:
+        """发送礼物"""
+        return self.__dict__.get('sendGift')
+
+    @property
+    def openAudio(self) -> Optional[bool]:
+        """发送音频"""
+        return self.__dict__.get('openAudio')
+
+    @property
+    def cdTime(self) -> Optional[int]:
+        """发送间隔？"""
+        return self.__dict__.get('cdTime')
+
+    @property
+    def normalRedPackage(self) -> Optional[bool]:
+        """普通红包"""
+        return self.__dict__.get('normalRedPackage')
+
+    @property
+    def passwordRedPackage(self) -> Optional[bool]:
+        """密码红包"""
+        return self.__dict__.get('passwordRedPackage')
+
+    @property
+    def specicalRedPackage(self) -> Optional[bool]:
+        """特殊红包"""
+        return self.__dict__.get('specicalRedPackage')
+
+    @property
+    def welcomeMessage(self) -> Optional[bool]:
+        """欢迎消息"""
+        return self.__dict__.get('welcomeMessage')
+
+    @property
+    def replyMessage(self) -> Optional[bool]:
+        """回复消息"""
+        return self.__dict__.get('replyMessage')
+
+    @property
+    def roomTitle(self) -> Optional[bool]:
+        """设置房间标题"""
+        return self.__dict__.get('roomTitle')
+
+    @property
+    def roomTopic(self) -> Optional[bool]:
+        """设置房间话题"""
+        return self.__dict__.get('roomTopic')
+
+
+class UserConfig(BaseClass):
+    def __init__(self, _raw_data: dict):
+        super().__init__(_raw_data)
+
+        for k, v in _raw_data.items():
+            self.__dict__[k] = v
+
+    @property
+    def bgImg(self) -> Optional[str]:
+        """背景图片"""
+        return self.__dict__.get('bgImg')
+
+    @property
+    def bubbleId(self) -> Optional[str]:
+        """气泡id"""
+        return self.__dict__.get('bubbleId')
+
+
+class BaseRoomInfo:
+    def __init__(self, _raw_data: dict):
+        for k, v in _raw_data.items():
+            if k == 'roomInfo':
+                v = RoomInfo(v)
+            elif k == 'userFunction':
+                v = UserFunction(v)
+            elif k == 'userConfig':
+                v = UserConfig(v)
+
+            self.__dict__[k] = v
+
+    @property
+    def roomInfo(self) -> Optional[RoomInfo]:
+        """房间信息"""
+        return self.__dict__.get('roomInfo')
+
+    @property
+    def userFunction(self) -> Optional[UserFunction]:
+        """用户权限"""
+        return self.__dict__.get('userFunction')
+
+    @property
+    def roomRole(self) -> Optional[str]:
+        """房间角色？"""
+        return self.__dict__.get('roomRole')
+
+    @property
+    def userConfig(self) -> Optional[UserConfig]:
+        """用户设置"""
+        return self.__dict__.get('userConfig')
+
+    @property
+    def managerName(self) -> Optional[str]:
+        """管理员名称"""
+        return self.__dict__.get('managerName')
+
+    @property
+    def openAnonymousStatus(self) -> Optional[int]:
+        """打开匿名状态？"""
+        return self.__dict__.get('openAnonymousStatus')
+
+
