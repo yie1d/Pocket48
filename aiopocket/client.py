@@ -147,7 +147,7 @@ class Client:
 
         return res_json
 
-    def user_login(self):
+    def user_login(self) -> None:
         """用户登录"""
 
         token_headers = {
