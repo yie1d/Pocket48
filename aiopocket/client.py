@@ -197,17 +197,14 @@ class Client:
         """
         通过成员id获取成员基本信息（无法获取普通用户信息）
         """
-        if isinstance(_id, int):
-            url = yarl.URL.build(
-                path='/user/api/v1/user/star/archives'
-            )
-            params = {
-                'lastTime': 0,
-                'memberId': _id,
-                'limit': 20
-            }
-        else:
-            raise PocketTypeError("类型错误！")
+        url = yarl.URL.build(
+            path='/user/api/v1/user/star/archives'
+        )
+        params = {
+            'lastTime': 0,
+            'memberId': _id,
+            'limit': 20
+        }
 
         res_json = await self.__apost(url, params)
 
