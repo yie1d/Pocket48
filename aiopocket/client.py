@@ -84,7 +84,7 @@ class Client:
         return self.__session
 
     @property
-    def config(self):
+    def config(self) -> dict:
         """
         配置项
         """
@@ -108,7 +108,7 @@ class Client:
         return b64encode((_NOW_TIME + ',' + _UUID + ',' + _MD5 + ',' + _PostKeyVersion).encode()).decode()
 
     @property
-    def headers(self):
+    def headers(self) -> dict:
         """
         基本headers
         """
