@@ -7,9 +7,10 @@ from aiopocket import Client
 async def main():
     async with Client() as client:
         # 农燕萍   417321
-        m = await client.get_userInfo(417321)
+        # m = await client.get_userInfo(417321)
         # await client.get_starBasicInfo()
         # await client.get_starBasicInfo(417321)
+        await client.get_roomInfo(63554)
 
 
 async def demo():
