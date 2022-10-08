@@ -11,7 +11,7 @@ async def main():
         # await client.get_starBasicInfo()
         # await client.get_starBasicInfo(417321)
 
-1
+
 async def demo():
     async with Client() as client:
         print(client.user_login())
