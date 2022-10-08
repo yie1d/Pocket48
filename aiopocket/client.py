@@ -15,7 +15,7 @@ import requests
 from tenacity import retry as aretry, stop_after_attempt, wait_fixed
 from retrying import retry
 
-from .typedefs import LoginUserInfo, UserInfo, StarBasicInfo, UserBasicInfo
+from .typedefs import *
 from .exceptions import PocketTypeError
 from .utils import show
 
@@ -118,16 +118,18 @@ class Client:
             aiohttp.hdrs.HOST: self.config['Headers']['host'],
             aiohttp.hdrs.CONNECTION: 'close',
             aiohttp.hdrs.ACCEPT_ENCODING: self.config['Headers']['content_type'],
-            'appInfo': self.config['Headers']['appInfo']
+            'appInfo': json.dumps(self.config['Headers']['appInfo'])
         }
 
         if self.__login_user.token is None:
             self.user_login()
 
-        return base_headers.update({
+        base_headers.update({
             'pa': self.pa,
             'token': self.__login_user.token
         })
+
+        return base_headers
 
     @staticmethod
     @retry(stop_max_attempt_number=3, wait_fixed=3)
@@ -223,3 +225,18 @@ class Client:
         res_json = await self.__apost(url, params)
 
         return UserBasicInfo(res_json['content'])
+
+    async def get_roomInfo(self, _id):
+        """通过id获取xox房间信息"""
+        url = yarl.URL.build(
+            path='/im/api/v1/im/room/info/type/source'
+        )
+        params = {
+            'sourceId': _id,
+            'type': 0
+        }
+
+        res_json = await self.__apost(url, params)
+
+        return BaseRoomInfo(res_json['content'])
+
