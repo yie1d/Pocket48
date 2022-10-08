@@ -1,0 +1,24 @@
+[userInfo]
+username = "登录账号"
+password = "登录密码"
+
+[paInfo]
+PostKey = "PostKey"
+PostKeyVersion = "2021060901"
+
+[Headers]
+user_agent = ""
+content_type = "application/json; charset=UTF-8"
+host = "pocketapi.48.cn"
+accept_encoding = "gzip"
+
+[Headers.appInfo]
+IMEI = ""
+appBuild = ""
+deviceId = ""
+deviceName = "vmos"
+osType = "android"
+osVersion = "7.1.2"
+phoneName = "vmos"
+phoneSystemVersion = "7.1.2"
+vendor = "vmos"
