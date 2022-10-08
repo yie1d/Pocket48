@@ -15,7 +15,7 @@ async def main():
 
 async def demo():
     async with Client() as client:
-        print(client.user_login())
+        # print(client.user_login())
         print(await client.get_starBasicInfo(417321))
 
 
