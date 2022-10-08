@@ -213,7 +213,7 @@ class Client:
 
         return StarBasicInfo(res_json['content'])
 
-    async def get_userInfo(self, _id: int):
+    async def get_userInfo(self, _id: int) -> UserBasicInfo:
         """通过id获取用户信息（适用于所有用户）"""
         url = yarl.URL.build(
             path='/user/api/v1/user/info/home'
@@ -226,7 +226,7 @@ class Client:
 
         return UserBasicInfo(res_json['content'])
 
-    async def get_roomInfo(self, _id):
+    async def get_roomInfo(self, _id: int) -> BaseRoomInfo:
         """通过id获取xox房间信息"""
         url = yarl.URL.build(
             path='/im/api/v1/im/room/info/type/source'
@@ -239,4 +239,3 @@ class Client:
         res_json = await self.__apost(url, params)
 
         return BaseRoomInfo(res_json['content'])
-
