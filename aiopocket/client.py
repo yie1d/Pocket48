@@ -193,7 +193,7 @@ class Client:
         else:
             return res_json
 
-    async def get_starBasicInfo(self, _userId: int) -> StarBasicInfo:
+    async def get_starBasicInfo(self, _id: int) -> StarBasicInfo:
         """
         通过成员id获取成员基本信息（无法获取普通用户信息）
         """
@@ -202,7 +202,7 @@ class Client:
         )
         params = {
             'lastTime': 0,
-            'memberId': _userId,
+            'memberId': _id,
             'limit': 20
         }
 
@@ -210,45 +210,29 @@ class Client:
 
         return StarBasicInfo(res_json['content'])
 
-    async def get_userInfo(self, _userId: int) -> UserBasicInfo:
+    async def get_userInfo(self, _id: int) -> UserBasicInfo:
         """通过id获取用户信息（适用于所有用户）"""
         url = yarl.URL.build(
             path='/user/api/v1/user/info/home'
         )
         params = {
-            'userId': _userId
+            'userId': _id
         }
 
         res_json = await self.__apost(url, params)
 
         return UserBasicInfo(res_json['content'])
 
-    async def get_roomInfo(self, _userId: int) -> BaseRoomInfo:
+    async def get_roomInfo(self, _id: int) -> BaseRoomInfo:
         """通过id获取xox房间信息"""
         url = yarl.URL.build(
             path='/im/api/v1/im/room/info/type/source'
         )
         params = {
-            'sourceId': _userId,
+            'sourceId': _id,
             'type': 0
         }
 
         res_json = await self.__apost(url, params)
 
         return BaseRoomInfo(res_json['content'])
-
-    async def get_ChatInfo(self, _userId: int, _roomId: int, _nextTime: int):
-        """获取聊天页数据"""
-        url = yarl.URL.build(
-            path='/im/api/v1/chatroom/msg/list/homeowner'
-        )
-        params = {
-            "needTop1Msg": False,
-            "nextTime": _nextTime,
-            "ownerId": _userId,
-            "roomId": _roomId
-        }
-
-        res_json = await self.__apost(url, params)
-
-        return RoomChatInfo(res_json['content'])
