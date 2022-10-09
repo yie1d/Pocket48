@@ -6,11 +6,12 @@ from aiopocket import Client
 # https://source.48.cn/
 async def main():
     async with Client() as client:
-        # 农燕萍   417321
+        # 农燕萍   417321  67313737
         # m = await client.get_userInfo(417321)
         # await client.get_starBasicInfo()
         # await client.get_starBasicInfo(417321)
-        await client.get_roomInfo(63554)
+        # await client.get_roomInfo(63554)
+        await client.get_ChatInfo(417321, 67313737, 0)
 
 
 async def demo():

@@ -193,7 +193,7 @@ class BigSmallInfo(BaseClass):
         """
         super().__init__(_raw_data)
 
-        for k, v in _raw_data.items():
+        for k, v in self.raw_data.items():
             if k == 'smallUserInfo':
                 v = [UserInfo(_userInfo) for _userInfo in v]
             if k in 'bigUserInfo':
@@ -601,7 +601,7 @@ class RoomInfo(BaseClass):
         """房间信息"""
         super().__init__(_raw_data)
 
-        for k, v in _raw_data.items():
+        for k, v in self.raw_data.items():
             self.__dict__[k] = v
 
     @property
@@ -730,7 +730,7 @@ class UserFunction(BaseClass):
         """用户功能"""
         super().__init__(_raw_data)
 
-        for k, v in _raw_data.items():
+        for k, v in self.raw_data.items():
             self.__dict__[k] = v
 
     @property
@@ -824,7 +824,7 @@ class UserConfig(BaseClass):
         """用户配置"""
         super().__init__(_raw_data)
 
-        for k, v in _raw_data.items():
+        for k, v in self.raw_data.items():
             self.__dict__[k] = v
 
     @property
@@ -838,10 +838,12 @@ class UserConfig(BaseClass):
         return self.__dict__.get('bubbleId')
 
 
-class BaseRoomInfo:
+class BaseRoomInfo(BaseClass):
     def __init__(self, _raw_data: dict):
         """房间基础信息"""
-        for k, v in _raw_data.items():
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
             if k == 'roomInfo':
                 v = RoomInfo(v)
             elif k == 'userFunction':
@@ -880,3 +882,69 @@ class BaseRoomInfo:
     def openAnonymousStatus(self) -> Optional[int]:
         """打开匿名状态？"""
         return self.__dict__.get('openAnonymousStatus')
+
+
+class MessageInfo(BaseClass):
+    def __init__(self, _raw_data: dict):
+        """房间聊天消息"""
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            self.__dict__[k] = v
+
+    @property
+    def serverId(self) -> Optional[int]:
+        """服务id"""
+        return self.__dict__.get('serverId')
+
+    @property
+    def msgidClient(self) -> Optional[str]:
+        """消息id客户端"""
+        return self.__dict__.get('msgidClient')
+
+    @property
+    def msgTime(self) -> Optional[int]:
+        """消息发送时间"""
+        return self.__dict__.get('msgTime')
+
+    @property
+    def msgType(self) -> Optional[str]:
+        """消息类型"""
+        return self.__dict__.get('msgType')
+
+    @property
+    def bodys(self) -> Optional[str]:
+        """??"""
+        return self.__dict__.get('bodys')
+
+    @property
+    def extInfo(self) -> Optional:
+        pass
+
+    @property
+    def privacy(self) -> Optional[bool]:
+        """是否私密"""
+        return self.__dict__.get('privacy')
+
+
+
+class RoomChatInfo(BaseClass):
+    def __init__(self, _raw_data: dict):
+        """房间聊天消息"""
+        super().__init__(_raw_data)
+
+        for k, v in self.raw_data.items():
+            if k == 'message':
+                v = [MessageInfo(msg) for msg in v]
+
+            self.__dict__[k] = v
+
+    @property
+    def message(self) -> List:
+        """消息列表"""
+        return self.__dict__.get('message')
+
+    @property
+    def nextTime(self) -> Optional[int]:
+        """最后一条时间戳"""
+        return self.__dict__.get('nextTime')
